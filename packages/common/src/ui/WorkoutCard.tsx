@@ -1,18 +1,16 @@
+import { observer } from "mobx-react-lite";
 import * as React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface Props {
   exercise: string;
   repsAndWeight: string;
   sets: string[];
+  onSetPress: (index: number) => void;
 }
 
-export const WorkoutCard: React.FC<Props> = ({
-  exercise,
-  repsAndWeight,
-  sets
-}) => {
-  return (
+export const WorkoutCard: React.FC<Props> = observer(
+  ({ exercise, repsAndWeight, sets, onSetPress }) => (
     <View style={styles.card}>
       <View style={styles.topRow}>
         <Text style={styles.topRowText}>{exercise}</Text>
@@ -31,18 +29,28 @@ export const WorkoutCard: React.FC<Props> = ({
             );
           }
           if (set === "") {
-            return <View style={styles.circle} key={set + index} />;
+            return (
+              <TouchableOpacity
+                onPress={() => onSetPress(index)}
+                style={[styles.circle, styles.fadedBackground]}
+                key={set + index}
+              />
+            );
           }
           return (
-            <View style={styles.circle} key={set + index}>
+            <TouchableOpacity
+              onPress={() => onSetPress(index)}
+              style={styles.circle}
+              key={set + index}
+            >
               <Text style={[styles.whiteText, styles.circleText]}>{set}</Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
     </View>
-  );
-};
+  )
+);
 
 const styles = StyleSheet.create({
   card: {
@@ -53,7 +61,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     margin: 10,
-    padding: 10
+    padding: 10,
+    marginBottom: 10
   },
   topRow: {
     flexDirection: "row",
@@ -69,20 +78,20 @@ const styles = StyleSheet.create({
     marginTop: 14
   },
   circle: {
-    borderRadius: 10,
-    // width: 10,
-    // height: 10,
-    backgroundColor: "#8fb299",
-    padding: 15
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    backgroundColor: "#8fb299"
   },
   whiteText: {
     color: "#fff"
   },
   circleText: {
-    fontSize: 16
+    fontSize: 16,
+    margin: "auto"
   },
   grayText: {
-    color: "gray"
+    color: "#655252"
   },
   fadedBackground: {
     backgroundColor: "#b2a1a1"

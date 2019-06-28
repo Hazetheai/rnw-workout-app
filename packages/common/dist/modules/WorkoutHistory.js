@@ -10,12 +10,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var mobx_react_lite_1 = require("mobx-react-lite");
 var React = __importStar(require("react"));
 var react_native_1 = require("react-native");
-var RoutersStore_1 = require("../stores/RoutersStore");
+var RootStore_1 = require("../stores/RootStore");
 exports.WorkoutHistory = mobx_react_lite_1.observer(function () {
-    var routerStore = React.useContext(RoutersStore_1.RouterStoreContext);
+    var rootStore = React.useContext(RootStore_1.RootStoreContext);
     return (React.createElement(react_native_1.View, null,
         React.createElement(react_native_1.Text, null, "Workout History page: "),
         React.createElement(react_native_1.Button, { title: "Create Workout", onPress: function () {
-                routerStore.screen = "CurrentWorkout";
+                rootStore.workoutStore.currentExercises.push({
+                    exercise: "Squat",
+                    numSets: 5,
+                    reps: 5,
+                    sets: ["", "", "", "", ""],
+                    weight: 260
+                }, {
+                    exercise: "Bench Press",
+                    numSets: 5,
+                    reps: 5,
+                    sets: ["", "", "", "", ""],
+                    weight: 200
+                }, {
+                    exercise: "Deadlift",
+                    numSets: 1,
+                    reps: 5,
+                    sets: ["", "x", "x", "x", "x"],
+                    weight: 360
+                });
+                rootStore.routerStore.screen = "CurrentWorkout";
             } })));
 });

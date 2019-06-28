@@ -7,14 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var mobx_1 = require("mobx");
-var WorkoutStoreRouterStore = /** @class */ (function () {
-    function WorkoutStoreRouterStore(rootStore) {
-        this.screen = "CurrentWorkout";
+var RouterStore = /** @class */ (function () {
+    function RouterStore(rootStore) {
+        this.screen = "WorkoutHistory";
         this.rootStore = rootStore;
     }
     __decorate([
         mobx_1.observable
-    ], WorkoutStoreRouterStore.prototype, "screen", void 0);
-    return WorkoutStoreRouterStore;
+    ], RouterStore.prototype, "screen", void 0);
+    return RouterStore;
 }());
-exports.WorkoutStoreRouterStore = WorkoutStoreRouterStore;
+exports.RouterStore = RouterStore;
