@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import * as React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Card } from "./Card";
 
 interface Props {
   exercise: string;
@@ -9,59 +10,8 @@ interface Props {
   onSetPress: (index: number) => void;
 }
 
-export const WorkoutCard: React.FC<Props> = observer(
-  ({ exercise, repsAndWeight, sets, onSetPress }) => (
-    <View style={styles.card}>
-      <View style={styles.topRow}>
-        <Text style={styles.topRowText}>{exercise}</Text>
-        <Text style={styles.topRowText}>{repsAndWeight}</Text>
-      </View>
-      <View style={styles.bottomRow}>
-        {sets.map((set, index) => {
-          if (set === "x") {
-            return (
-              <View
-                style={[styles.circle, styles.fadedBackground]}
-                key={set + index}
-              >
-                <Text style={[styles.circleText, styles.grayText]}>X</Text>
-              </View>
-            );
-          }
-          if (set === "") {
-            return (
-              <TouchableOpacity
-                onPress={() => onSetPress(index)}
-                style={[styles.circle, styles.fadedBackground]}
-                key={set + index}
-              />
-            );
-          }
-          return (
-            <TouchableOpacity
-              onPress={() => onSetPress(index)}
-              style={styles.circle}
-              key={set + index}
-            >
-              <Text style={[styles.whiteText, styles.circleText]}>{set}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
-  )
-);
-
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 3,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    margin: 10,
-    padding: 10,
+  cardContainer: {
     marginBottom: 10
   },
   topRow: {
@@ -97,3 +47,48 @@ const styles = StyleSheet.create({
     backgroundColor: "#b2a1a1"
   }
 });
+
+export const WorkoutCard: React.FC<Props> = observer(
+  ({ exercise, repsAndWeight, sets, onSetPress }) => (
+    <View style={styles.cardContainer}>
+      <Card>
+        <View style={styles.topRow}>
+          <Text style={styles.topRowText}>{exercise}</Text>
+          <Text style={styles.topRowText}>{repsAndWeight}</Text>
+        </View>
+        <View style={styles.bottomRow}>
+          {sets.map((set, index) => {
+            if (set === "x") {
+              return (
+                <View
+                  style={[styles.circle, styles.fadedBackground]}
+                  key={set + index}
+                >
+                  <Text style={[styles.circleText, styles.grayText]}>X</Text>
+                </View>
+              );
+            }
+            if (set === "") {
+              return (
+                <TouchableOpacity
+                  onPress={() => onSetPress(index)}
+                  style={[styles.circle, styles.fadedBackground]}
+                  key={set + index}
+                />
+              );
+            }
+            return (
+              <TouchableOpacity
+                onPress={() => onSetPress(index)}
+                style={styles.circle}
+                key={set + index}
+              >
+                <Text style={[styles.whiteText, styles.circleText]}>{set}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </Card>
+    </View>
+  )
+);
