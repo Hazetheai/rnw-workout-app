@@ -13,7 +13,7 @@ app/
 
 # production
 /build
-/packages/common/dist
+packages/common/dist/
 
 # misc
 .DS_Store
