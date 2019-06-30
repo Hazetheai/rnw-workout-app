@@ -1,57 +1,159 @@
 import { observer } from "mobx-react-lite";
 import * as React from "react";
-import { Button, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { RouteComponentProps } from "react-router";
 import { RootStoreContext } from "../stores/RootStore";
+import { CurrentExercise } from "../stores/WorkoutStore";
+import { Fab } from "../ui/Fab";
+import { HistoryCard } from "../ui/HistoryCard";
 
 interface Props extends RouteComponentProps {}
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row"
+  },
+  cardContainer: {
+    flex: 1,
+    padding: 10
+  },
+  container: {
+    flex: 1
+  }
+});
 
 export const WorkoutHistory: React.FC<Props> = observer(({ history }) => {
   const rootStore = React.useContext(RootStoreContext);
 
+  const rows: Array<
+    Array<{
+      date: string;
+      exercises: CurrentExercise[];
+    }>
+  > = [];
+
+  Object.entries(rootStore.workoutStore.history).forEach(
+    ([date, exercises], i) => {
+      if (i % 3 === 0) {
+        rows.push([
+          {
+            date,
+            exercises
+          }
+        ]);
+      } else {
+        rows[rows.length - 1].push({
+          date,
+          exercises
+        });
+      }
+    }
+  );
+
   return (
-    <View>
-      <Text>Workout History page: </Text>
-      <Button
-        title="Create Workout"
+    <View style={styles.container}>
+      {/* "date1 date2 date3" */}
+      <FlatList
+        renderItem={({ item }) => (
+          <View style={styles.row}>
+            {item.map(({ date, exercises }) => (
+              <View key={date} style={styles.cardContainer}>
+                <HistoryCard
+                  onPress={() => {
+                    const parts = date.split("-");
+                    history.push(
+                      `/workout/${parts[0]}/${parts[1]}/${parts[2]}`
+                    );
+                  }}
+                  header={date}
+                  currentExercises={exercises}
+                />
+              </View>
+            ))}
+            {item.length < 3 ? <View style={styles.cardContainer} /> : null}
+            {item.length < 2 ? <View style={styles.cardContainer} /> : null}
+          </View>
+        )}
+        data={rows}
+        keyExtractor={item => item.reduce((pv, cv) => pv + " " + cv.date, "")}
+      />
+      <Fab
         onPress={() => {
-          rootStore.workoutStore.currentExercises.push(
-            {
-              exercise: "Squat",
-              numSets: 5,
-              reps: 5,
-              sets: ["", "", "", "", ""],
-              weight: 260
-            },
-            {
-              exercise: "Bench Press",
-              numSets: 5,
-              reps: 5,
-              sets: ["", "", "", "", ""],
-              weight: 200
-            },
-            {
-              exercise: "Deadlift",
-              numSets: 1,
-              reps: 5,
-              sets: ["", "x", "x", "x", "x"],
-              weight: 360
+          if (!rootStore.workoutStore.hasCurrentWorkout) {
+            const {
+              currentBarbellRow,
+              currentBenchPress,
+              currentDeadlift,
+              currentSquat,
+              currentOverheadPress
+            } = rootStore.workoutStore;
+            const emptySets = ["", "", "", "", ""];
+
+            if (rootStore.workoutStore.lastWorkoutType === "b") {
+              rootStore.workoutStore.currentExercises.push(
+                {
+                  exercise: "Squat",
+                  numSets: 5,
+                  reps: 5,
+                  sets: [...emptySets],
+                  weight: currentSquat
+                },
+                {
+                  exercise: "Bench Press",
+                  numSets: 5,
+                  reps: 5,
+                  sets: [...emptySets],
+                  weight: currentBenchPress
+                },
+                {
+                  exercise: "Deadlift",
+                  numSets: 1,
+                  reps: 5,
+                  sets: ["", "x", "x", "x", "x"],
+                  weight: currentDeadlift
+                }
+              );
+
+              rootStore.workoutStore.currentSquat += 5;
+              rootStore.workoutStore.currentBenchPress += 5;
+              rootStore.workoutStore.currentDeadlift += 5;
+            } else {
+              rootStore.workoutStore.currentExercises.push(
+                {
+                  exercise: "Squat",
+                  numSets: 5,
+                  reps: 5,
+                  sets: [...emptySets],
+                  weight: currentSquat
+                },
+                {
+                  exercise: "Overhead Press",
+                  numSets: 5,
+                  reps: 5,
+                  sets: [...emptySets],
+                  weight: currentOverheadPress
+                },
+                {
+                  exercise: "Barbell Row",
+                  numSets: 5,
+                  reps: 5,
+                  sets: [...emptySets],
+                  weight: currentBarbellRow
+                }
+              );
+
+              rootStore.workoutStore.currentSquat += 5;
+              rootStore.workoutStore.currentOverheadPress += 5;
+              rootStore.workoutStore.currentBarbellRow += 5;
             }
-          );
-          history.push("./current-workout");
+
+            rootStore.workoutStore.lastWorkoutType =
+              rootStore.workoutStore.lastWorkoutType === "a" ? "b" : "a";
+          }
+
+          history.push("/current-workout");
         }}
       />
     </View>
   );
 });
-
-// const rows: JSX.Element[][] = [];
-
-// Object.entries(rootStore.workoutStore.history).forEach(([date, val], idx) => {
-//   const hc = <HistoryCard key={date} header={date} currentExercises={val} />;
-//   if (idx % 2 === 0) {
-//     rows.push([hc]);
-//   } else {
-//     rows[rows.length - 1].push(hc);
-//   }
-// });
